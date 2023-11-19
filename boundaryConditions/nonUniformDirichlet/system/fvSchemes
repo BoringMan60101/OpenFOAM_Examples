@@ -1,0 +1,45 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      fvSchemes;
+}
+// 'default' означает, что схема применяется ко всем слагаемым такого вида
+
+
+// Аппроксимация производной по времени
+ddtSchemes
+{
+    default         steadyState; // Стационарный режим
+}
+
+// Аппроксимация градиента
+gradSchemes
+{
+    default         Gauss linear;
+}
+
+// Аппроксимация дивергенции
+divSchemes
+{
+    default         Gauss linear;
+}
+
+// Аппроксимация оператора Лапласа
+laplacianSchemes
+{
+    default         Gauss linear orthogonal;
+}
+
+// Аппроксимация значений на гранях контрольных объемов
+interpolationSchemes
+{
+    default         linear;
+}
+
+// Аппроксимация потока на гранях контрольных объёмов
+snGradSchemes
+{
+    default         orthogonal;
+}

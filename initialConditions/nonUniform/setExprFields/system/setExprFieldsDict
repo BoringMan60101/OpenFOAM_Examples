@@ -1,0 +1,46 @@
+FoamFile
+{
+	version 2.0;
+	format ascii;
+	class dictionary;
+	object setExprFieldsDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+// Пример файла для задания начальных условий с помощью утилиты setExprFields
+
+
+// Документация к технологии 'expressions'
+// https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&ved=2ahUKEwjF5tbv6NCCAxVHJhAIHW00CaIQFnoECAgQAQ&url=https%3A%2F%2Fwww.openfoam.com%2Fdocumentation%2Fguides%2Flatest%2Fdoc%2Fopenfoam-guide-expression-syntax.html&usg=AOvVaw36XqhznNiTj2ARi6gZVf2U&opi=89978449
+expressions
+(
+	T 
+	{
+		field T; // Имя поля должно совпадать с тем, что в директории '0'
+		dimensions [0 0 0 1 0 0 0];
+
+		constants
+		{
+			center (1 2 3); // Здесь можно завать скалярные и векторные константы
+		}
+
+		variables
+		(
+			// Доступ к координатам
+			"x = pos().x()" 
+			"y = pos().y()" 
+			"z = pos().z()" 
+
+			// Доступ ко времени (для задания начальных условий не нужен)
+			"t = time()"
+		);
+
+		expression // Здесь задаётся формула начальных условий для поля 'T'
+		#{
+			x + cos(y) + mag(center)
+		#};
+	}	
+);
+
+// Кроме поля 'T' внутри 'expressions' по точно такому же синтаксису
+// Могло быть включено несколько полей (в том числе векторных)

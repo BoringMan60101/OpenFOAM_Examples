@@ -1,0 +1,60 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2112                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volScalarField; //Скалярное поле температур
+    object      T;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+//#include "../system/snappyHexMeshDict" //Там R0 определено. Здесь h зав. от R0.
+
+dimensions      [0 0 0 1 0 0 0]; //Размерность К-Кельвины
+
+internalField   uniform 0; //Начальное распределение температуры
+
+boundaryField
+{
+    innerSphere
+    {
+        type             codedMixed;
+        refValue         uniform 0;
+        refGradient      uniform 0;
+        valueFraction    uniform 0;
+        name             codedRobinBC;
+        
+        code 
+        #{
+            const fvPatch& spherePatch    = this->patch(); 
+            const vectorField& centerFace = spherePatch.Cf(); 
+            //!!! delta ОБРАТНЫЕ расстояния от центров яччек до граней !!!
+            const scalarField& delta      = spherePatch.deltaCoeffs();  
+            scalar x, y, z;
+    
+            //!!! Нужно найти способ получать это значение из словаря
+            // где задаётся сетка
+            const scalar R0 = 2.0; 
+            const scalar h = 1.0/R0; 
+            const scalar k = 1.0;
+            
+            forAll(centerFace, i) {
+                x = centerFace[i].x();
+                y = centerFace[i].y();
+                z = centerFace[i].z();
+                //!!! (delta)
+                this->valueFraction()[i] = 1.0 / (1.0 + (k*delta[i])/h); 
+                this->refValue()[i] = R0*x;
+                this->refGrad()[i] = 0.0;
+            }
+        #};
+    }
+}
+
+
+// ************************************************************************* //

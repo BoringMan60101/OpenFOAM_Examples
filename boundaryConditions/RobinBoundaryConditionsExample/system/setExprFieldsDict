@@ -1,0 +1,34 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2112                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      setExprFieldsDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+#include "snappyHexMeshDict"
+loadFields (T);
+expressions
+(	
+	T_an
+	{
+		field T_an;
+		dimensions [0 0 0 1 0 0 0];
+		variables
+		(
+			"x = pos().x()"
+			"y = pos().y()"
+			"z = pos().z()"
+            "R0 = 3.0" //(из snappyHexMeshDict)
+		);
+		expression #{ (R0 * x)/2.0 #};
+        create  yes;
+	}
+);
